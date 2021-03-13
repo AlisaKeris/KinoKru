@@ -28,7 +28,7 @@ namespace KinoKru
         Image[] images = new Image[5];
         SqlDataAdapter sAdapter;
         DataTable dt = new DataTable();
-        SqlConnection connection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\opilane\source\repos\Krupenko\KinoKru\KinoKru\filmid.mdf;Integrated Security=True");
+        SqlConnection connection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\alisa\Source\Repos\KinoKru\KinoKru\tables.mdf;Integrated Security=True");
         public Form1()
         {
             
@@ -57,8 +57,13 @@ namespace KinoKru
             da.Fill(dt);
             if (dt.Rows.Count > 0)//Проверка пароля и логина
             {
+                
+                
+            }
+            else
+            {
                 this.Controls.Clear();
-                bsearch = new Button { Location = new Point(130, 15), Size = new Size(30, 30), Image = Image.FromFile(@"C:\Users\opilane\source\repos\Krupenko\KinoKru\KinoKru\img\search.png") };
+                bsearch = new Button { Location = new Point(130, 15), Size = new Size(30, 30), Image = Image.FromFile(@"C:\Users\alisa\source\repos\KinoKru\KinoKru\img\search.png") };
                 search = new TextBox { Location = new Point(30, 20) };
                 filmpic = new PictureBox { Location = new Point(600, 50), Size = new Size(500, 500) };
                 this.Controls.Add(search);
@@ -68,24 +73,24 @@ namespace KinoKru
                 InitializeComponent();
                 bsearch.Click += Bsearch_Click;
                 sds = new DataSet();
-				dtp.ValueChanged += Dtp_ValueChanged;
+                dtp.ValueChanged += Dtp_ValueChanged;
 
                 sAdapter = new SqlDataAdapter("SELECT * FROM Filmid ", connection);
 
                 sAdapter.Fill(sds, "Filmid");
 
                 connection.Close();
-				dgv = new DataGridView { ReadOnly = true, BackgroundColor = Color.White };
+                dgv = new DataGridView { ReadOnly = true, BackgroundColor = Color.White };
                 dgv.Location = new Point(30, 50);
                 dgv.Size = new Size(540, 200);
                 dgv.DataSource = sds.Tables["Filmid"];
                 dgv.RowHeaderMouseClick += Dgv_RowHeaderMouseClick;
                 this.Controls.Add(dgv);
                 saalide_list = new ListBox { Size = new Size(100, 50) };
-                images[1] = Image.FromFile(@"C:\Users\opilane\source\repos\Krupenko\KinoKru\KinoKru\img\Seven.jpg");
-                images[2] = Image.FromFile(@"C:\Users\opilane\source\repos\Krupenko\KinoKru\KinoKru\img\ovg.jpg");
-                images[3] = Image.FromFile(@"C:\Users\opilane\source\repos\Krupenko\KinoKru\KinoKru\img\ltl.png");
-                images[4] = Image.FromFile(@"C:\Users\opilane\source\repos\Krupenko\KinoKru\KinoKru\img\tc.jpg");
+                images[1] = Image.FromFile(@"C:\Users\alisa\source\repos\KinoKru\KinoKru\img\Seven.jpg");
+                images[2] = Image.FromFile(@"C:\Users\alisa\source\repos\KinoKru\KinoKru\img\ovg.jpg");
+                images[3] = Image.FromFile(@"C:\Users\alisa\source\repos\KinoKru\KinoKru\img\ltl.png");
+                images[4] = Image.FromFile(@"C:\Users\alisa\source\repos\KinoKru\KinoKru\img\tc.jpg");
                 saalide_list.Location = new Point(20, 330);
                 connection.Open();
                 sAdapter = new SqlDataAdapter("SELECT * FROM Saalid", connection);
@@ -108,11 +113,6 @@ namespace KinoKru
                     kohad_list[a] = (int)row["Kohad"];
                     a++;
                 }
-                
-            }
-            else
-            {
-                MessageBox.Show("Vale sisselogimine või parool! Kontrollige oma parooli ja sisselogimist!");
             }
             connection.Close();
         }

@@ -19,16 +19,19 @@ namespace KinoKru
         int i, j;
         Label[,] _arr;
         StreamWriter to_file;
-
+        Image img;
         Button osta, kinni;
         bool ost = true;
         List<string> arr_pilet;
+        TextBox NimiTxt, EmailTxt;
+        int[] _tag;
         public Saalidform(int i_, int j_)
         {
-            
+            NimiTxt = new TextBox { Text ="nimi",Location = new Point(300,400)};
+            EmailTxt = new TextBox { Text="email", Location = new Point(300, 435) };
             this.Text = "Ap_polo_kino";
-
-
+            this.Controls.Add(NimiTxt);
+            this.Controls.Add(EmailTxt);
             osta = new Button();
             osta.Text = "Osta";
             osta.Location = new Point(10, 400);
@@ -42,12 +45,13 @@ namespace KinoKru
             _arr = new Label[i_, j_];
             this.Size = new Size(i_ * 100, j_ * 100);
             this.Text = "Ap_polo_kino";
+            
             for (i = 0; i < i_; i++)
             {
                 for (j = 0; j < j_; j++)
                 {
                     _arr[i, j] = new Label();
-                    _arr[i, j].Image = Image.FromFile(@"C:\Users\opilane\source\repos\Krupenko\KinoKru\KinoKru\img\roh.png");
+                    _arr[i, j].Image = Image.FromFile(@"C:\Users\alisa\source\repos\KinoKru\KinoKru\img\roh.png");
                     _arr[i, j].Text = " Koht" + (j + 1);
                     _arr[i, j].Size = new Size(70, 70);
                     _arr[i, j].BorderStyle = BorderStyle.Fixed3D;
@@ -66,13 +70,14 @@ namespace KinoKru
             if (_arr[tag[0], tag[1]].Text != "Kinni")
             {
                 _arr[tag[0], tag[1]].Text = "Kinni";
-                _arr[tag[0], tag[1]].Image = Image.FromFile(@"C:\Users\opilane\source\repos\Krupenko\KinoKru\KinoKru\img\kol.jpg"); 
-                
+                _arr[tag[0], tag[1]].Image = Image.FromFile(@"C:\Users\alisa\source\repos\KinoKru\KinoKru\img\kol.jpg");
+
             }
             else
             {
                 MessageBox.Show("Pilet rida:" + (tag[0] + 1) + " Koht:" + (tag[1] + 1) + " juba ostetud!");
             }
+            _tag = tag;
         }
 
 		
@@ -88,33 +93,31 @@ namespace KinoKru
         }
         void Pilet_saada()
         {
+
             
             try
             {
+                string adress = EmailTxt.Text;
                 MailMessage mail = new MailMessage();
                 SmtpClient smtpClient = new SmtpClient("smtp.gmail.com")
                 {
                     Port = 587,
-                    
-                    Credentials = new System.Net.NetworkCredential("alisa.krupenko18@gmail.com", "Alisa Krupenko"),
+                    Credentials = new System.Net.NetworkCredential("alisa.krupenko18@gmail.com", " "),
                     EnableSsl = true
                 };
                 mail.From = new MailAddress("alisa.krupenko18@gmail.com");
-                //mail.To = new MailAddress("");
-                mail.Subject = "Pilet";
-                mail.Body = "Pilet on ostetud ja ta on maanuses";
+                mail.To.Add(adress);
+                mail.Subject = NimiTxt.Text + " Filmi Rida " + (_tag[0] + 1).ToString() + " ja Koht " + (_tag[1] + 1).ToString();
 
-                foreach (var item in arr_pilet)
-                {
-                    mail.Attachments.Add(new Attachment(item));
-                }
                 smtpClient.Send(mail);
+
 
             }
             catch (Exception)
             {
                 MessageBox.Show("Viga");
             }
+
         }
         
 
@@ -178,10 +181,10 @@ namespace KinoKru
                     {
                         for (int j = 0; j < 4; j++)
                         {
-                            if (_arr[i, j].Image == Image.FromFile(@"C:\Users\opilane\source\repos\Krupenko\KinoKru\KinoKru\img\kol.jpg"))
+                            if (_arr[i, j].Image == Image.FromFile(@"C:\Users\alisa\source\repos\KinoKru\KinoKru\img\kol.jpg"))
                             {
                                 t++;
-                                _arr[i, j].Image = Image.FromFile(@"C:\Users\opilane\source\repos\Krupenko\KinoKru\KinoKru\img\pun.jpg");
+                                _arr[i, j].Image = Image.FromFile(@"C:\Users\alisa\source\repos\KinoKru\KinoKru\img\pun.jpg");
                                 //Сохранить каждый билет в файл
                                 StreamWriter pilet = new StreamWriter("Pilet" + (t).ToString() + "Rida" + (i + 1).ToString() + "koht" + (j + 1).ToString() + ".txt");
                                 //arr_pilet[t-1]="Pilet" + (t).ToString() + "Rida" + (i+1).ToString() + "koht" + (j+1).ToString() + ".txt";
@@ -202,10 +205,10 @@ namespace KinoKru
                     {
                         for (int j = 0; j < 4; j++)
                         {
-                            if (_arr[i, j].Image == Image.FromFile(@"C:\Users\opilane\source\repos\Krupenko\KinoKru\KinoKru\img\kol.jpg"))
+                            if (_arr[i, j].Image == Image.FromFile(@"C:\Users\alisa\source\repos\KinoKru\KinoKru\img\kol.jpg"))
                             {
                                 _arr[i, j].Text = " Koht" + (j + 1);
-                                _arr[i, j].Image = Image.FromFile(@"C:\Users\opilane\source\repos\Krupenko\KinoKru\KinoKru\img\roh.png"); ;
+                                _arr[i, j].Image = Image.FromFile(@"C:\Users\alisa\source\repos\KinoKru\KinoKru\img\roh.png"); ;
                                 ost = false;
                             }
                         }
