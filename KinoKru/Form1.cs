@@ -15,9 +15,11 @@ namespace KinoKru
 {
 	public partial class Form1 : Form
 	{
-        DateTimePicker dtp;
-        Button bsearch, v;
-        TextBox search, login, pass;
+        SqlCommand command;
+        Label kir;
+        DateTimePicker dtp,aeg;
+        Button bsearch, v,update;
+        TextBox search, login, pass,nimi,pilet,kirjeldus;
         int[] read_list;
         int[] kohad_list;
         PictureBox filmpic ;
@@ -53,12 +55,37 @@ namespace KinoKru
             string password = pass.Text;
             SqlCommand cmd = new SqlCommand("select userid,password from login where userid='" + login.Text + "'and password='" + pass.Text + "'", connection);
             SqlDataAdapter da = new SqlDataAdapter(cmd);
+            sds = new DataSet();
+            
 
+            sAdapter = new SqlDataAdapter("SELECT * FROM Filmid ", connection);
+
+            sAdapter.Fill(sds, "Filmid");
+
+            connection.Close();
+            dgv = new DataGridView { ReadOnly = true, BackgroundColor = Color.White };
+            
+            dgv.Size = new Size(400, 200);
+            dgv.DataSource = sds.Tables["Filmid"];
+            dgv.RowHeaderMouseClick += Dgv_RowHeaderMouseClick;
             da.Fill(dt);
             if (dt.Rows.Count > 0)//Проверка пароля и логина
             {
-                
-                
+                this.Size = new Size(500,400);
+                this.Controls.Clear();
+                nimi = new TextBox {Location= new Point(50,30) ,Text="Filmi nimi"};
+                kirjeldus = new TextBox { Location = new Point(50, 120) ,Text="Kirjeldus"};
+                aeg = new DateTimePicker { Location = new Point(50, 60) };
+                pilet = new TextBox { Location = new Point(50, 90) ,Text="Pileti hind"};
+                dgv.Location = new Point(30, 150);
+                update = new Button { Location= new Point(150,120),Text="Lisa"};
+                update.Click += Update_Click;
+                this.Controls.Add(update);
+                this.Controls.Add(nimi);
+                this.Controls.Add(aeg);
+                this.Controls.Add(pilet);
+                this.Controls.Add(kirjeldus);
+                this.Controls.Add(dgv);
             }
             else
             {
@@ -72,19 +99,8 @@ namespace KinoKru
                 this.Controls.Add(dtp);
                 InitializeComponent();
                 bsearch.Click += Bsearch_Click;
-                sds = new DataSet();
                 dtp.ValueChanged += Dtp_ValueChanged;
-
-                sAdapter = new SqlDataAdapter("SELECT * FROM Filmid ", connection);
-
-                sAdapter.Fill(sds, "Filmid");
-
-                connection.Close();
-                dgv = new DataGridView { ReadOnly = true, BackgroundColor = Color.White };
                 dgv.Location = new Point(30, 50);
-                dgv.Size = new Size(540, 200);
-                dgv.DataSource = sds.Tables["Filmid"];
-                dgv.RowHeaderMouseClick += Dgv_RowHeaderMouseClick;
                 this.Controls.Add(dgv);
                 saalide_list = new ListBox { Size = new Size(100, 50) };
                 images[1] = Image.FromFile(@"C:\Users\alisa\source\repos\KinoKru\KinoKru\img\Seven.jpg");
@@ -95,9 +111,10 @@ namespace KinoKru
                 connection.Open();
                 sAdapter = new SqlDataAdapter("SELECT * FROM Saalid", connection);
                 dgv.Columns["Id"].Visible = false;
-
+                dgv.Columns["Kirjeldus"].Visible = false;
                 this.Controls.Add(filmpic);
-
+                kir = new Label {Location = new Point(150,300),Size = new Size(400,300)};
+                this.Controls.Add(kir);
                 DataTable saalid_table = new DataTable();
                 sAdapter.Fill(saalid_table);
                 foreach (DataRow row in saalid_table.Rows)
@@ -117,7 +134,36 @@ namespace KinoKru
             connection.Close();
         }
 
-		private void Dtp_ValueChanged(object sender, EventArgs e) //поиск в таблице по времени сеанса
+        private void Update_Click(object sender, EventArgs e)
+        {
+            if (nimi.Text != "" && pilet.Text != "" && kirjeldus.Text != "" )
+            {
+                try
+                {
+                    command = new SqlCommand("INSERT INTO Filmid(Nimi,Aeg,Pilet,Kirjeldus) values(@nimi,@kirjeldus,@pilet)", connection);
+                    connection.Open();
+                    command.Parameters.AddWithValue("@nimi", nimi.Text);
+                    command.Parameters.AddWithValue("@kirjeldus", kirjeldus.Text);
+                    command.Parameters.AddWithValue("@pilet", pilet.Text);
+                    command.Parameters.AddWithValue("@aeg", aeg.Text);
+                    command.ExecuteNonQuery();
+                    connection.Close();
+                    
+                    MessageBox.Show("Andmed on lisatud");
+                }
+                catch (Exception)
+                {
+
+                    MessageBox.Show("Viga lisamisega");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Viga");
+            }
+        }
+
+        private void Dtp_ValueChanged(object sender, EventArgs e) //поиск в таблице по времени сеанса
 		{
             DateTime searchValue = dtp.Value;
             dgv.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
@@ -188,7 +234,7 @@ namespace KinoKru
             int p = 0;
             p = Convert.ToInt32(dgv.Rows[e.RowIndex].Cells[0].Value);
             filmpic.Image = images[p];
-            
+            kir.Text = dgv.Rows[e.RowIndex].Cells[4].Value.ToString();
             Label lbl = new Label { Text="Vali saal", Location = new Point(20,300), Size  = new Size(50,20)};
             
             this.Controls.Add(lbl);

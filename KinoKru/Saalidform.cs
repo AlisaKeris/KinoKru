@@ -19,30 +19,31 @@ namespace KinoKru
         int i, j;
         Label[,] _arr;
         StreamWriter to_file;
-        Image img;
+        
         Button osta, kinni;
         bool ost = true;
         List<string> arr_pilet;
-        TextBox NimiTxt, EmailTxt;
+        TextBox Nimitxt, Emailtxt;
         int[] _tag;
         public Saalidform(int i_, int j_)
         {
-            NimiTxt = new TextBox { Text ="nimi",Location = new Point(300,400)};
-            EmailTxt = new TextBox { Text="email", Location = new Point(300, 435) };
+            Nimitxt = new TextBox { Text ="Nimi",Location = new Point(10,320)};
+            Emailtxt = new TextBox { Text="Email", Location = new Point(10, 350) };
             this.Text = "Ap_polo_kino";
-            this.Controls.Add(NimiTxt);
-            this.Controls.Add(EmailTxt);
+            this.Controls.Add(Nimitxt);
+            this.Controls.Add(Emailtxt);
             osta = new Button();
             osta.Text = "Osta";
-            osta.Location = new Point(10, 400);
+            osta.Location = new Point(10, 380);
             this.Controls.Add(osta);
             osta.Click += Osta_Click;
             kinni = new Button();
             kinni.Text = "Kinni";
-            kinni.Location = new Point(10, 435);
+            kinni.Location = new Point(10, 410);
             this.Controls.Add(kinni);
             kinni.Click += Kinni_Click;
-            _arr = new Label[i_, j_];
+            _arr = new Label[i_, j_] ;
+             
             this.Size = new Size(i_ * 100, j_ * 100);
             this.Text = "Ap_polo_kino";
             
@@ -52,10 +53,11 @@ namespace KinoKru
                 {
                     _arr[i, j] = new Label();
                     _arr[i, j].Image = Image.FromFile(@"C:\Users\alisa\source\repos\KinoKru\KinoKru\img\roh.png");
+                    _arr[i, j].TextAlign= ContentAlignment.MiddleCenter;
                     _arr[i, j].Text = " Koht" + (j + 1);
-                    _arr[i, j].Size = new Size(70, 70);
+                    _arr[i, j].Size = new Size(65, 65);
                     _arr[i, j].BorderStyle = BorderStyle.Fixed3D;
-                    _arr[i, j].Location = new Point(j * 70 + 70, i * 70);
+                    _arr[i, j].Location = new Point(j * 70 + 120, i * 70);
                     this.Controls.Add(_arr[i, j]);
                     _arr[i, j].Tag = new int[] { i, j };
 					_arr[i, j].Click += Saalidform_Click1;
@@ -93,24 +95,24 @@ namespace KinoKru
         }
         void Pilet_saada()
         {
+            string password = System.IO.File.ReadAllText(@"C:\Users\alisa\source\repos\KinoKru\password.txt");
 
-            
             try
             {
-                string adress = EmailTxt.Text;
+                string adress = Emailtxt.Text;
                 MailMessage mail = new MailMessage();
                 SmtpClient smtpClient = new SmtpClient("smtp.gmail.com")
                 {
                     Port = 587,
-                    Credentials = new System.Net.NetworkCredential("alisa.krupenko18@gmail.com", " "),
+                    Credentials = new System.Net.NetworkCredential("alisa.krupenko18@gmail.com", password),
                     EnableSsl = true
                 };
                 mail.From = new MailAddress("alisa.krupenko18@gmail.com");
                 mail.To.Add(adress);
-                mail.Subject = NimiTxt.Text + " Filmi Rida " + (_tag[0] + 1).ToString() + " ja Koht " + (_tag[1] + 1).ToString();
+                mail.Subject = Nimitxt.Text + " Rida " + (_tag[0] + 1).ToString() + " ja Koht " + (_tag[1] + 1).ToString();
 
                 smtpClient.Send(mail);
-
+                
 
             }
             catch (Exception)
